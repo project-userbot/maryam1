@@ -141,8 +141,14 @@ function App() {
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [showFloatingHeart, setShowFloatingHeart] = useState(false);
   const [play, { stop }] = useSound(
-    'https://github.com/ideafy1/assetsmarya/raw/main/die-with-a-smile-lyrics-lady-gaga-ft-bruno-mars-128-ytshorts.savetube.me.mp3',
-    { volume: 0.5 }
+    'https://raw.githubusercontent.com/ideafy1/assetsmarya/main/die-with-a-smile-lyrics-lady-gaga-ft-bruno-mars-128-ytshorts.savetube.me.mp3',
+    { 
+      volume: 0.5,
+      onload: () => console.log('Audio loaded'),
+      onplay: () => console.log('Playing audio'),
+      onerror: (error) => console.error('Audio error:', error),
+      html5: true
+    }
   );
   const particles = useRef<any>(null);
 
