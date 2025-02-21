@@ -8,6 +8,8 @@ import { loadSlim } from "tsparticles-slim";
 import type { Engine } from "tsparticles-engine";
 import { TypewriterText } from './components/TypewriterText';
 import { FloatingHeart } from './components/FloatingHeart';
+import { Butterfly } from './components/Butterfly';
+import { FloatingConfetti } from './components/FloatingConfetti';
 
 function ParticlesBackground() {
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -109,30 +111,96 @@ function FloatingStars() {
   );
 }
 
-function MagicTitle() {
-  const [{ x, y }, set] = useSpring(() => ({ x: 0, y: 0 }));
-  
-  const calc = (event: React.MouseEvent) => {
-    const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width;
-    const y = (event.clientY - bounds.top) / bounds.height;
-    return [-(y - 0.5) * 20, (x - 0.5) * 20, 1.1];
+function FloatingButterflies() {
+  const colors = [
+    "#FF69B4", // pink
+    "#9F7AEA", // purple
+    "#4299E1", // blue
+    "#F687B3", // light pink
+    "#B794F4", // light purple
+  ];
+
+  const generatePath = () => {
+    const points = [];
+    for (let i = 0; i < 4; i++) {
+      points.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+      });
+    }
+    return points;
   };
-  
-  const trans = (x: number, y: number, s: number) =>
-    `perspective(600px) rotateX(${x}deg) rotateY(${y}deg) scale(${s})`;
 
   return (
-    <animated.h1
-      className="text-5xl md:text-7xl text-center mb-12 font-['Great_Vibes'] magical-text relative z-10"
-      style={{
-        transform: x.to((x, y) => trans(x, y, 1.1)),
-      }}
-      onMouseMove={(e) => set({ x: calc(e)[0], y: calc(e)[1] })}
-      onMouseLeave={() => set({ x: 0, y: 0 })}
-    >
-      To the man who holds my heart
-    </animated.h1>
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {[...Array(8)].map((_, i) => {
+        const path = generatePath();
+        const size = Math.random() * 20 + 25; // Random size between 25-45
+        
+        return (
+          <motion.div
+            key={i}
+            className="absolute"
+            initial={{
+              x: -100,
+              y: Math.random() * window.innerHeight,
+              scale: 0
+            }}
+            animate={{
+              x: [
+                path[0].x,
+                path[1].x,
+                path[2].x,
+                path[3].x,
+                window.innerWidth + 100
+              ],
+              y: [
+                path[0].y,
+                path[1].y,
+                path[2].y,
+                path[3].y,
+                path[0].y
+              ],
+              rotate: [0, 10, -10, 15, -15, 0],
+              scale: [1, 1.2, 0.8, 1.1, 0.9, 1]
+            }}
+            transition={{
+              duration: Math.random() * 20 + 15,
+              repeat: Infinity,
+              ease: "linear",
+              times: [0, 0.25, 0.5, 0.75, 1],
+            }}
+          >
+            <motion.div
+              animate={{
+                y: [-5, 5, -5],
+                rotate: [-10, 10, -10]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Butterfly 
+                color={colors[Math.floor(Math.random() * colors.length)]}
+                size={size}
+              />
+            </motion.div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+function MagicTitle() {
+  return (
+    <div className="magical-title-container px-4 sm:px-6">
+      <h1 className="text-4xl sm:text-6xl md:text-7xl text-center mb-8 sm:mb-12 font-['Playfair_Display'] magical-text enhanced-text-shadow">
+        To the man who holds my heart
+      </h1>
+    </div>
   );
 }
 
@@ -151,10 +219,14 @@ function App() {
     }
   );
   const particles = useRef<any>(null);
+  const [isScanning, setIsScanning] = useState(false);
 
   const handleFingerprint = () => {
-    play();
-    setIsLetterOpen(true);
+    setIsScanning(true);
+    setTimeout(() => {
+      play();
+      setIsLetterOpen(true);
+    }, 2000);
   };
 
   const handleLetterComplete = useCallback(() => {
@@ -199,25 +271,64 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 1 }}
-            className="min-h-screen flex flex-col items-center justify-center p-4 relative"
+            className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative z-10"
           >
+            <FloatingButterflies />
             <MagicTitle />
             <motion.p
-              className="text-2xl font-['Lato'] text-gray-700 mb-12 magical-text-secondary hover-underline"
+              className="text-xl sm:text-2xl font-['Dancing_Script'] text-gray-700 mb-8 sm:mb-12 magical-text-secondary enhanced-text-shadow text-center px-4"
               whileHover={{ scale: 1.05 }}
             >
-              Open Your Surprise
+              ✨ Touch to Open Your Magical Surprise ✨
             </motion.p>
-            <motion.button
-              onClick={handleFingerprint}
-              className="magical-button p-8 rounded-full relative group"
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <div className="absolute inset-0 rounded-full magical-border"></div>
-              <Fingerprint size={80} className="text-white relative z-10" />
-              <div className="absolute inset-0 magical-glow rounded-full"></div>
-            </motion.button>
+            <div className="magical-button-container">
+              <div className="magical-button-glow" />
+              <motion.button
+                onClick={handleFingerprint}
+                className={`magical-button p-6 sm:p-8 rounded-full relative group scanning-effect ${
+                  isScanning ? 'fingerprint-active' : ''
+                }`}
+                whileTap={{ scale: 0.95 }}
+                disabled={isScanning}
+              >
+                <div className="magical-border" />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-full"
+                  animate={isScanning ? {
+                    opacity: [0.3, 0.7, 0.3],
+                    scale: [1, 1.1, 1],
+                  } : {}}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div
+                  className="relative z-10 flex flex-col items-center"
+                >
+                  <Fingerprint 
+                    size={80} 
+                    className={`text-white drop-shadow-lg transition-all duration-300 ${
+                      isScanning ? 'opacity-80 filter hue-rotate-90' : ''
+                    }`}
+                  />
+                  <motion.span
+                    className="mt-2 text-white text-sm font-bold tracking-wider"
+                    animate={isScanning ? {
+                      opacity: [0, 1, 0]
+                    } : {}}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    {isScanning ? 'Scanning...' : 'Touch to Open'}
+                  </motion.span>
+                </motion.div>
+              </motion.button>
+            </div>
           </motion.div>
         )}
 
@@ -237,14 +348,14 @@ function App() {
                 bounce: 0.1
               }}
             >
-              <div className="font-['Dancing_Script'] text-2xl leading-relaxed text-gray-800 dark:text-white text-center whitespace-pre-line">
+              <div className="font-['Dancing_Script'] text-xl sm:text-2xl leading-relaxed text-gray-800 dark:text-white text-center whitespace-pre-line px-4 sm:px-6 typewriter-text">
                 <TypewriterText
                   text="Baby, I am so blessed 🍀 you came into my life! I am so lucky and grateful that I found a guy who is beautiful inside and out. You are a gentleman—the way you take care of me, the way you look at me with full love, the way you listen to my yapping—you are my greenest planet!!
 
 You know our bond is like clear crystal water—no lies, no trust issues, only pure love. And you are my home; you make me complete 🎀
 
 I promise that I will be by your side in any situation, and I am there for you always. I hope you like this little surprise."
-                  delay={40}
+                  delay={50}
                   onComplete={handleLetterComplete}
                 />
               </div>
@@ -256,8 +367,9 @@ I promise that I will be by your side in any situation, and I am there for you a
                 animate={{ opacity: 1 }}
                 className="absolute inset-0 flex items-center justify-center magical-overlay"
               >
+                <FloatingConfetti />
                 <motion.div
-                  className="text-center"
+                  className="relative z-20 text-center"
                   initial={{ scale: 0, rotate: -45 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", damping: 10, stiffness: 100 }}
