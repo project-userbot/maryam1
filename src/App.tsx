@@ -8,7 +8,6 @@ import { loadSlim } from "tsparticles-slim";
 import type { Engine } from "tsparticles-engine";
 import { TypewriterText } from './components/TypewriterText';
 import { FloatingHeart } from './components/FloatingHeart';
-import { Butterfly } from './components/Butterfly';
 import { FloatingConfetti } from './components/FloatingConfetti';
 
 function ParticlesBackground() {
@@ -111,89 +110,6 @@ function FloatingStars() {
   );
 }
 
-function FloatingButterflies() {
-  const colors = [
-    "#FF69B4", // pink
-    "#9F7AEA", // purple
-    "#4299E1", // blue
-    "#F687B3", // light pink
-    "#B794F4", // light purple
-  ];
-
-  const generatePath = () => {
-    const points = [];
-    for (let i = 0; i < 4; i++) {
-      points.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-      });
-    }
-    return points;
-  };
-
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {[...Array(8)].map((_, i) => {
-        const path = generatePath();
-        const size = Math.random() * 20 + 25; // Random size between 25-45
-        
-        return (
-          <motion.div
-            key={i}
-            className="absolute"
-            initial={{
-              x: -100,
-              y: Math.random() * window.innerHeight,
-              scale: 0
-            }}
-            animate={{
-              x: [
-                path[0].x,
-                path[1].x,
-                path[2].x,
-                path[3].x,
-                window.innerWidth + 100
-              ],
-              y: [
-                path[0].y,
-                path[1].y,
-                path[2].y,
-                path[3].y,
-                path[0].y
-              ],
-              rotate: [0, 10, -10, 15, -15, 0],
-              scale: [1, 1.2, 0.8, 1.1, 0.9, 1]
-            }}
-            transition={{
-              duration: Math.random() * 20 + 15,
-              repeat: Infinity,
-              ease: "linear",
-              times: [0, 0.25, 0.5, 0.75, 1],
-            }}
-          >
-            <motion.div
-              animate={{
-                y: [-5, 5, -5],
-                rotate: [-10, 10, -10]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Butterfly 
-                color={colors[Math.floor(Math.random() * colors.length)]}
-                size={size}
-              />
-            </motion.div>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
-
 function MagicTitle() {
   return (
     <div className="magical-title-container px-4 sm:px-6">
@@ -273,7 +189,6 @@ function App() {
             transition={{ duration: 1 }}
             className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative z-10"
           >
-            <FloatingButterflies />
             <MagicTitle />
             <motion.p
               className="text-xl sm:text-2xl font-['Dancing_Script'] text-gray-700 mb-8 sm:mb-12 magical-text-secondary enhanced-text-shadow text-center px-4"
