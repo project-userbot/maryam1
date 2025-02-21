@@ -12,16 +12,16 @@ export function FloatingHeart({ onCatch }: { onCatch: () => void }) {
     >
       <div className="text-center">
         <motion.div
-          className="cursor-pointer relative"
+          className="cursor-pointer relative scale-90 sm:scale-100"
           initial={{ scale: 0 }}
           animate={{
-            x: ["-5vw", "5vw", "-3vw", "3vw", "-5vw"],
-            y: ["-5vh", "10vh", "-3vh", "8vh", "-5vh"],
-            rotate: [0, 15, -15, 0],
-            scale: [1, 1.15, 1]
+            x: ["-3vw", "3vw", "-2vw", "2vw", "-3vw"],
+            y: ["-3vh", "6vh", "-2vh", "4vh", "-3vh"],
+            rotate: [0, 10, -10, 0],
+            scale: [1, 1.1, 1]
           }}
           transition={{
-            duration: 15,
+            duration: 12,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -42,10 +42,8 @@ export function FloatingHeart({ onCatch }: { onCatch: () => void }) {
                 transition={{ delay: 0.5 }}
               >
                 <Target className="text-yellow-300 mb-2 animate-bounce" size={48} />
-                <span className="font-['Lato'] text-2xl font-bold mt-2 bg-gradient-to-r from-pink-400 to-yellow-300 bg-clip-text text-transparent">
-                  <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                    Click to Catch My Heart!
-                  </span>
+                <span className="font-['Playfair_Display'] text-xl sm:text-2xl font-bold mt-2 bg-gradient-to-r from-pink-400 to-yellow-300 bg-clip-text text-transparent enhanced-text-shadow">
+                  Click to Catch My Heart!
                 </span>
               </motion.div>
             </div>
